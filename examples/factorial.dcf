@@ -1,0 +1,15 @@
+# 再帰: 階乗とフィボナッチ (整数は多倍長)
+: fact ( n -- n! )
+  dup 1 <= [ drop 1 ] [ dup 1 - fact * ] if ;
+
+# 末尾再帰版。末尾呼び出しは最適化されるので深くてもスタックを消費しない
+: fact-iter ( acc n -- n! )
+  dup 0 = [ drop ] [ swap over * swap 1 - fact-iter ] if ;
+
+: fib ( n -- f )
+  dup 2 < [ ] [ dup 1 - fib swap 2 - fib + ] if ;
+
+0 11 [ | i | { i i fact } "{}! = {}" format . ] for
+"30! = " 30 fact + .
+"1000! は " 1 1000 fact-iter str len + " 桁" + .
+"fib(20) = " 20 fib + .

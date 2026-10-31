@@ -1,0 +1,38 @@
+# RPN 電卓: 逆ポーランド記法の言語で書いた、逆ポーランド記法の電卓
+#   使い方: decaf examples/calc.dcf   (1 行に 1 式。空行か EOF で終了)
+#   例: 3 4 + 2 *   →  14
+
+dict
+  "+" [ + ] put  "-" [ - ] put  "*" [ * ] put  "/" [ / ] put
+  "^" [ pow ] put  "sqrt" [ sqrt ] put
+>>ops
+
+: eval-token ( stack token -- stack )
+  | st tok |
+  ops tok has? [
+    st len 2 < tok "sqrt" != and [ "オペランドが足りません: " tok + throw ] when
+    tok "sqrt" = [
+      st pop sqrt push
+    ] [
+      st pop >b pop >a  a b ops tok get call push
+    ] if
+  ] [
+    tok num dup nil? [ "不明なトークン: " tok + throw ] when
+    st swap push
+  ] if ;
+
+: eval-line ( line -- result )
+  words { } [ eval-token ] fold
+  dup len 1 != [ "式が不完全です" throw ] when
+  first ;
+
+: main
+  [
+    "calc> " input
+    dup nil? over "" = or [ drop false ] [
+      [ eval-line "= " swap + . ] [ "エラー: " swap + . ] try
+      true
+    ] if
+  ] loop ;
+
+main

@@ -1,0 +1,14 @@
+# 単語の出現回数を数える
+#   使い方: decaf examples/wordcount.dcf FILE
+args empty? [ "使い方: decaf wordcount.dcf FILE" eprint 1 exit ] when
+args first read-file lower words >ws
+
+dict >counts
+ws [ | w |
+  counts w counts w get 0 or 1 + put drop
+] each
+
+counts keys [ counts swap get neg ] sort-by >sorted
+"総単語数: " ws len + .
+"異なり数: " sorted len + .
+sorted 0 10 slice [ | w | { counts w get w } "{}\t{}" format . ] each

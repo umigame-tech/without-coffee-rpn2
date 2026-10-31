@@ -1,0 +1,45 @@
+# Brainfuck インタプリタ (Decaf で書いた別言語の処理系)
+#   使い方: decaf examples/brainfuck.dcf [FILE]  (省略時は組み込みの Hello World)
+
+: build-jumps ( code -- dict )  # 対応する括弧の位置を事前に計算する
+  | code |
+  dict >jumps  { } >open
+  0 code len [ | i |
+    code i nth >c
+    c "[" = [ open i push drop ] when
+    c "]" = [
+      open empty? [ "対応する '[' がありません" throw ] when
+      open pop >j drop
+      jumps i j put j i put drop
+    ] when
+  ] for
+  open empty? not [ "対応する ']' がありません" throw ] when
+  jumps ;
+
+"" >>inbuf
+: input-byte ( -- n )  # 標準入力から 1 文字読む。EOF なら 0
+  inbuf empty? [ read-line dup nil? [ drop ] [ "\n" + >>inbuf ] if ] when
+  inbuf empty? [ 0 ] [ inbuf first ord  inbuf rest >>inbuf ] if ;
+
+: bf-run ( code -- )
+  | code |
+  code build-jumps >jumps
+  { 0 } 30000 * >tape
+  0 >ptr  0 >pc
+  [ pc code len < ] [
+    code pc nth >c
+    c ">" = [ ptr 1 + >ptr ] when
+    c "<" = [ ptr 1 - >ptr ] when
+    c "+" = [ tape ptr tape ptr nth 1 + 256 mod set-nth drop ] when
+    c "-" = [ tape ptr tape ptr nth 1 - 256 mod set-nth drop ] when
+    c "." = [ tape ptr nth chr print ] when
+    c "," = [ tape ptr input-byte set-nth drop ] when
+    c "[" = tape ptr nth 0 = and [ jumps pc get >pc ] when
+    c "]" = tape ptr nth 0 != and [ jumps pc get >pc ] when
+    pc 1 + >pc
+  ] while ;
+
+args empty?
+  [ "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++." ]
+  [ args first read-file ]
+if bf-run

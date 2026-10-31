@@ -1,0 +1,15 @@
+# ファイルの読み書き
+"/tmp/decaf-demo.txt" >path
+
+"1行目\n" path write-file
+{ "2行目" "3行目" } [ "\n" + path append-file ] each
+
+path file-exists? [ "書き込みました: " path + . ] when
+path read-file print
+path read-lines len "行あります" + .
+
+# 存在しないファイルを読むとエラーになるので try で捕捉する
+[ "/no/such/file.txt" read-file ] [ "捕捉したエラー: " swap + . ] try
+
+path delete-file
+path file-exists? [ "削除できていません" ] [ "削除しました" ] if .

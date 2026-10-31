@@ -1,0 +1,4 @@
+#!/usr/bin/env decaf
+# はじめての Decaf プログラム
+"Hello, World!" .
+"こんにちは、" "Decaf" + "!" + .
