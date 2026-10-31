@@ -1,0 +1,12 @@
+# include で読み込まれるライブラリの例
+: gcd ( a b -- g ) dup 0 = [ drop ] [ swap over mod gcd ] if ;
+: lcm ( a b -- l ) 2dup * abs -rot gcd / ;
+: prime? ( n -- flag )
+  | n |
+  n 2 < [ false return ] when
+  2 >i
+  [ i i * n <= ] [
+    n i mod 0 = [ false return ] when
+    i 1 + >i
+  ] while
+  true ;

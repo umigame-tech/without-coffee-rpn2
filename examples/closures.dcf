@@ -1,0 +1,19 @@
+# クロージャと高階関数
+: make-counter ( -- [-- n] )
+  0 >count
+  [ count 1 + >count count ] ;
+
+make-counter >c1
+make-counter >c2
+c1 call . c1 call . c1 call .   # 1 2 3
+c2 call .                       # 1 (独立したカウンタ)
+
+: compose ( f g -- [x -- y] ) | f g | [ f call g call ] ;
+[ 2 * ] [ 1 + ] compose >double-then-inc
+{ 1 2 3 } double-then-inc map .   # { 3 5 7 }
+
+# ワード参照 'name でワードを値として扱う
+: square dup * ;
+{ 1 2 3 4 } 'square map .
+{ 1 2 3 4 } 0 '+ fold .
+{ "banana" "kiwi" "apple" } [ len ] sort-by .

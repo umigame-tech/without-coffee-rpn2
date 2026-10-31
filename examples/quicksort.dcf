@@ -1,0 +1,12 @@
+# クイックソート: リストと再帰と高階ワード
+: quicksort ( list -- sorted )
+  dup len 1 <= [ return ] when
+  | xs |
+  xs first >pivot
+  xs rest >others
+  others [ pivot < ] filter quicksort
+  { pivot } +
+  others [ pivot >= ] filter quicksort + ;
+
+{ 38 27 43 3 9 82 10 3 } quicksort .
+{ "pear" "apple" "fig" "banana" } quicksort .

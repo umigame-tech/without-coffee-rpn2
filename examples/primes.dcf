@@ -1,0 +1,6 @@
+# 別ファイルのライブラリを include で読み込む
+"lib/mathlib.dcf" include
+
+"gcd(48, 18) = " 48 18 gcd + .
+"lcm(4, 6) = " 4 6 lcm + .
+"100 未満の素数: " 1 100 range [ prime? ] filter " " join + .
